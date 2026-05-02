@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 var mongooseDelete = require("mongoose-delete");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const Courses = new Schema(
   {
+    _id: { type: Number },
     name: { type: String, required: true },
     description: { type: String },
     image: { type: String },
@@ -17,7 +19,9 @@ const Courses = new Schema(
       unique: true,
     },
   },
-  { timestamps: true },
+  { 
+    _id: false,
+    timestamps: true },
 );
 
 // Tự tạo slug trước khi save
@@ -63,6 +67,7 @@ Courses.query.sortable = function (req) {
     return this;
   };
 
+  Courses.plugin(AutoIncrement, { id: "course_id_counter", inc_field: "_id" });
 Courses.plugin(mongooseDelete, {
   deletedAt: true,
   overrideMethods: "all",

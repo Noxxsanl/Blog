@@ -15,24 +15,6 @@ class MeController {
         });
       })
       .catch(next);
-
-    // Courses.countDocumentsDeleted()
-    //   .then((deletedCount) => {
-    //     console.log(`Number of deleted courses: ${deletedCount}`);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error counting deleted courses:", error);
-    //   });
-
-    // Courses.find({})
-    //   .then((courses) =>
-    //     res.render("me/stored-courses", {
-    //       courses: multipleMongooseToObject(courses),
-    //       deleted: req.query.deleted,
-    //     }),
-    //   )
-    //   .catch(next);
-    // res.render("me/stored-courses");
   }
 
   // [GET] /me/trash/courses

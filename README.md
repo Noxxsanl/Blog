@@ -136,3 +136,11 @@ a type = asc/ desc
 Method Res.locals in Express
 
 tấn công XSS   {{sortable "name" _sort}} thành {{{sortable "name" _sort}}}
+
+thêm sortable sau 
+
+-> xử lý khi nhiều request cùng 1 lúc tránh lỗi
+upsert mongodb 
+mongoose-sequence-github
+
+ npm install --save mongoose-sequence
