@@ -39,6 +39,12 @@ const config = {
   cors: {
     origin: process.env.CORS_ORIGIN || '*',
   },
+
+  // Session Configuration
+  session: {
+    secret: process.env.SESSION_SECRET || 'fallback_secret_change_in_production',
+    maxAge: parseInt(process.env.SESSION_MAX_AGE || '86400000', 10),
+  },
 };
 
 export default config;

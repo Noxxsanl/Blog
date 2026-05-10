@@ -84,3 +84,18 @@ export const PAGINATION = {
   DEFAULT_PAGE: 1,
   DEFAULT_LIMIT: 10,
 };
+
+/**
+ * Auth Messages
+ */
+export const AUTH_MESSAGES = {
+  LOGIN_SUCCESS: 'Đăng nhập thành công',
+  LOGIN_FAILED: 'Email hoặc mật khẩu không đúng',
+  LOGOUT_SUCCESS: 'Đăng xuất thành công',
+  EMAIL_REQUIRED: 'Email là bắt buộc',
+  EMAIL_INVALID: 'Email không đúng định dạng',
+  PASSWORD_REQUIRED: 'Mật khẩu là bắt buộc',
+  USER_NOT_FOUND: 'Không tìm thấy tài khoản',
+  USER_ALREADY_EXISTS: 'Email đã được sử dụng',
+  UNAUTHORIZED: 'Vui lòng đăng nhập để tiếp tục',
+};

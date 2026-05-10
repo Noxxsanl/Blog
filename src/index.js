@@ -9,6 +9,8 @@ import morgan from 'morgan';
 import { engine } from 'express-handlebars';
 import { fileURLToPath } from 'url';
 import methodOverride from 'method-override';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 // Import configurations
 import config from './config/config.js';
@@ -63,6 +65,31 @@ const initializeApp = async () => {
 
     // HTTP request logger middleware
     app.use(morgan('combined'));
+
+    // Session middleware
+    app.use(
+      session({
+        secret: config.session.secret,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+          mongoUrl: config.database.uri,
+          dbName: config.database.name,
+          ttl: config.session.maxAge / 1000,
+        }),
+        cookie: {
+          httpOnly: true,
+          maxAge: config.session.maxAge,
+          secure: config.isProduction,
+        },
+      }),
+    );
+
+    // Inject authenticated user into every view
+    app.use((req, res, next) => {
+      res.locals.currentUser = req.session.user || null;
+      next();
+    });
 
     /**
      * TEMPLATE ENGINE SETUP

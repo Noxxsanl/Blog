@@ -1,0 +1,172 @@
+<div class="card auth-card">
+    <div class="card-body p-4 p-sm-5">
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <div class="auth-logo mb-1">
+                <i class="fas fa-graduation-cap me-2"></i>Blog Khóa Học
+            </div>
+            <p class="text-muted small mb-0">Tạo tài khoản mới</p>
+        </div>
+
+        <!-- Auth error alert -->
+        {{#if authError}}
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>{{authError}}</span>
+        </div>
+        {{/if}}
+
+        <!-- Register form -->
+        <form id="registerForm" action="/register" method="POST" novalidate>
+
+            <!-- Full name -->
+            <div class="mb-3">
+                <label for="name" class="form-label fw-semibold">Họ và tên</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="fas fa-user text-muted"></i>
+                    </span>
+                    <input
+                        type="text"
+                        class="form-control {{#if errors.name}}is-invalid{{/if}}"
+                        id="name"
+                        name="name"
+                        value="{{oldInput.name}}"
+                        placeholder="Nguyễn Văn A"
+                        autocomplete="name"
+                        autofocus
+                    />
+                    {{#if errors.name}}
+                    <div class="invalid-feedback">{{errors.name}}</div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="fas fa-envelope text-muted"></i>
+                    </span>
+                    <input
+                        type="email"
+                        class="form-control {{#if errors.email}}is-invalid{{/if}}"
+                        id="email"
+                        name="email"
+                        value="{{oldInput.email}}"
+                        placeholder="email@example.com"
+                        autocomplete="email"
+                    />
+                    {{#if errors.email}}
+                    <div class="invalid-feedback">{{errors.email}}</div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input
+                        type="password"
+                        class="form-control {{#if errors.password}}is-invalid{{/if}}"
+                        id="password"
+                        name="password"
+                        placeholder="Tối thiểu 6 ký tự"
+                        autocomplete="new-password"
+                    />
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="togglePassword"
+                        tabindex="-1"
+                        title="Hiện/ẩn mật khẩu"
+                    >
+                        <i class="fas fa-eye" id="eyeIconPassword"></i>
+                    </button>
+                    {{#if errors.password}}
+                    <div class="invalid-feedback">{{errors.password}}</div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Confirm password -->
+            <div class="mb-4">
+                <label for="confirmPassword" class="form-label fw-semibold">Xác nhận mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input
+                        type="password"
+                        class="form-control {{#if errors.confirmPassword}}is-invalid{{/if}}"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Nhập lại mật khẩu"
+                        autocomplete="new-password"
+                    />
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="toggleConfirm"
+                        tabindex="-1"
+                        title="Hiện/ẩn mật khẩu"
+                    >
+                        <i class="fas fa-eye" id="eyeIconConfirm"></i>
+                    </button>
+                    {{#if errors.confirmPassword}}
+                    <div class="invalid-feedback">{{errors.confirmPassword}}</div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-auth btn-primary w-100 text-white" id="submitBtn">
+                <span id="btnText">
+                    <i class="fas fa-user-plus me-2"></i>Đăng ký
+                </span>
+                <span id="btnLoading" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Đang xử lý...
+                </span>
+            </button>
+        </form>
+
+        <!-- Divider & login link -->
+        <hr class="auth-divider my-4" />
+        <p class="text-center text-muted small mb-0">
+            Đã có tài khoản?
+            <a href="/login" class="fw-semibold text-decoration-none">Đăng nhập</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    function toggleVisibility(btnId, inputId, iconId) {
+        document.getElementById(btnId).addEventListener('click', function () {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    }
+
+    toggleVisibility('togglePassword', 'password', 'eyeIconPassword');
+    toggleVisibility('toggleConfirm', 'confirmPassword', 'eyeIconConfirm');
+
+    // Loading state on submit
+    document.getElementById('registerForm').addEventListener('submit', function () {
+        document.getElementById('btnText').classList.add('d-none');
+        document.getElementById('btnLoading').classList.remove('d-none');
+        document.getElementById('submitBtn').disabled = true;
+    });
+</script>

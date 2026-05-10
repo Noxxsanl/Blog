@@ -7,24 +7,28 @@ import newsRouter from './news.js';
 import siteRouter from './site.js';
 import coursesRouter from './courses.js';
 import meRouter from './me.js';
+import authRouter from './auth.js';
 
 /**
  * Configure all routes for the application
- * 
+ *
  * @param {object} app - Express application instance
  */
 const route = (app) => {
-  // News routes
-  app.use('/news', newsRouter);
+    // Auth routes (login, logout)
+    app.use('/', authRouter);
 
-  // User-specific routes (My Courses)
-  app.use('/me', meRouter);
+    // News routes
+    app.use('/news', newsRouter);
 
-  // Course management routes
-  app.use('/courses', coursesRouter);
+    // User-specific routes (My Courses)
+    app.use('/me', meRouter);
 
-  // General site routes (should be last - catches everything else)
-  app.use('/', siteRouter);
+    // Course management routes
+    app.use('/courses', coursesRouter);
+
+    // General site routes (should be last - catches everything else)
+    app.use('/', siteRouter);
 };
 
 export default route;
