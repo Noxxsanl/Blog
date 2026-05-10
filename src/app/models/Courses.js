@@ -6,11 +6,10 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 import mongooseDelete from 'mongoose-delete';
-import mongooseSequence from 'mongoose-sequence';
+import Counter from './Counter.js';
 import { COURSE_LEVELS, SLUG_CONFIG, SORT_OPTIONS } from '../../config/constants/index.js';
 
 const Schema = mongoose.Schema;
-const AutoIncrement = mongooseSequence(mongoose);
 
 /**
  * Course Schema Definition
@@ -74,6 +73,20 @@ const courseSchema = new Schema(
 );
 
 /**
+ * Pre-save middleware: Auto-increment numeric _id
+ */
+courseSchema.pre('save', async function autoIncrementId() {
+  if (this.isNew) {
+    const counter = await Counter.findByIdAndUpdate(
+      'course_id_counter',
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true },
+    );
+    this._id = counter.seq;
+  }
+});
+
+/**
  * Pre-save middleware: Generate unique slug before saving
  * Ensures slug is URL-friendly and unique
  */
@@ -132,12 +145,6 @@ courseSchema.query.sortable = function sortableQuery(req) {
 /**
  * Apply Plugins
  */
-
-// Auto-increment plugin for numeric _id
-courseSchema.plugin(AutoIncrement, {
-  id: 'course_id_counter',
-  inc_field: '_id',
-});
 
 // Soft delete plugin
 courseSchema.plugin(mongooseDelete, {

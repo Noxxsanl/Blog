@@ -20,6 +20,7 @@ import logger from './utils/logger.js';
 // Import middleware
 import sortMiddleware from './middlewares/sortMiddleware.js';
 import errorHandler from './middlewares/errorHandler.js';
+import flashMiddleware from './middlewares/flashMiddleware.js';
 
 // Import helpers
 import helpers from './helpers/handlebars.js';
@@ -92,6 +93,9 @@ const initializeApp = async () => {
       res.locals.currentPath = req.path;
       next();
     });
+
+    // Flash message middleware (must come after session)
+    app.use(flashMiddleware);
 
     /**
      * TEMPLATE ENGINE SETUP

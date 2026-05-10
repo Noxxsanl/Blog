@@ -1,0 +1,180 @@
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title"><i class="fas fa-pen me-2"></i>Edit Course</h1>
+        <p class="page-subtitle">Editing: <strong>{{course.name}}</strong></p>
+    </div>
+    <div class="page-header-right">
+        <a href="/courses/{{course.slug}}" class="btn btn-outline-info btn-sm" target="_blank">
+            <i class="fas fa-eye me-1"></i>View Public
+        </a>
+        <a href="/admin/courses" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Main Form -->
+    <div class="col-lg-8">
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <h2 class="panel-card-title"><i class="fas fa-pen me-2 text-primary"></i>Course Details</h2>
+            </div>
+            <div class="panel-card-body">
+
+                {{#if formError}}
+                <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>{{formError}}</span>
+                </div>
+                {{/if}}
+
+                <form method="POST" action="/admin/courses/{{course._id}}?_method=PUT" id="courseForm" novalidate>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Course Name <span class="text-danger">*</span></label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            value="{{#if oldInput.name}}{{oldInput.name}}{{else}}{{course.name}}{{/if}}"
+                            required
+                            autofocus
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            rows="5"
+                        >{{#if oldInput.description}}{{oldInput.description}}{{else}}{{course.description}}{{/if}}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Thumbnail URL</label>
+                        <input
+                            type="url"
+                            name="image"
+                            class="form-control"
+                            value="{{#if oldInput.image}}{{oldInput.image}}{{else}}{{course.image}}{{/if}}"
+                            id="imageUrlInput"
+                            placeholder="https://example.com/image.jpg"
+                        />
+                        <div class="mt-2" id="imagePreview" style="display:none;">
+                            <img id="previewImg" src="" alt="Preview"
+                                style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e2e8f0;" />
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold">Level <span class="text-danger">*</span></label>
+                            {{#with (defaultTo oldInput.level course.level) as |lvl|}}
+                            <select name="level" class="form-select" required>
+                                <option value="Cơ bản" {{#if (eq lvl 'Cơ bản')}}selected{{/if}}>Cơ bản</option>
+                                <option value="Trung cấp" {{#if (eq lvl 'Trung cấp')}}selected{{/if}}>Trung cấp</option>
+                                <option value="Nâng cao" {{#if (eq lvl 'Nâng cao')}}selected{{/if}}>Nâng cao</option>
+                            </select>
+                            {{/with}}
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold">Status</label>
+                            {{#with (defaultTo oldInput.status (defaultTo course.status 'published')) as |st|}}
+                            <select name="status" class="form-select">
+                                <option value="published" {{#if (eq st 'published')}}selected{{/if}}>Published</option>
+                                <option value="draft" {{#if (eq st 'draft')}}selected{{/if}}>Draft</option>
+                                <option value="archived" {{#if (eq st 'archived')}}selected{{/if}}>Archived</option>
+                            </select>
+                            {{/with}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span id="submitText"><i class="fas fa-save me-1"></i>Save Changes</span>
+                            <span id="submitSpinner" style="display:none;" aria-hidden="true">
+                                <span class="spinner-border spinner-border-sm me-1"></span>Saving...
+                            </span>
+                        </button>
+                        <a href="/admin/courses" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="col-lg-4">
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <h2 class="panel-card-title"><i class="fas fa-circle-info me-2 text-info"></i>Course Info</h2>
+            </div>
+            <div class="panel-card-body" style="font-size:13px;color:#64748b;">
+                <div class="mb-2"><strong>ID:</strong> #{{course._id}}</div>
+                <div class="mb-2"><strong>Slug:</strong> <code style="font-size:11px;">{{course.slug}}</code></div>
+                <div class="mb-2"><strong>Created:</strong> {{formatDate course.createdAt}}</div>
+                <div class="mb-3"><strong>Updated:</strong> {{formatDate course.updatedAt}}</div>
+                <hr />
+                <div class="d-flex gap-2 flex-wrap mt-3">
+                    <a href="/courses/{{course.slug}}" class="btn btn-sm btn-outline-info" target="_blank">
+                        <i class="fas fa-eye me-1"></i>Public View
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnDeleteCourse">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden delete form -->
+<form id="deleteForm" method="POST" action="/admin/courses/{{course._id}}?_method=DELETE" style="display:none;"></form>
+
+<script>
+(function () {
+    const input = document.getElementById('imageUrlInput');
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+
+    function showPreview(url) {
+        if (!url) { preview.style.display = 'none'; return; }
+        previewImg.src = url;
+        preview.style.display = 'block';
+        previewImg.onerror = function () { preview.style.display = 'none'; };
+        previewImg.onload = function () { preview.style.display = 'block'; };
+    }
+
+    if (input && input.value) showPreview(input.value);
+    if (input) input.addEventListener('blur', function () { showPreview(this.value.trim()); });
+
+    // Prevent double submit
+    const form = document.getElementById('courseForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+
+    if (form) {
+        form.addEventListener('submit', function () {
+            if (!form.checkValidity()) return;
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitSpinner.style.display = 'inline-flex';
+        });
+    }
+
+    // Delete button
+    const btnDelete = document.getElementById('btnDeleteCourse');
+    if (btnDelete) {
+        btnDelete.addEventListener('click', function () {
+            if (confirm('Move this course to trash?')) {
+                document.getElementById('deleteForm').submit();
+            }
+        });
+    }
+})();
+</script>

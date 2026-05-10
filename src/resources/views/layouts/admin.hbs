@@ -69,6 +69,26 @@
             </div>
         </header>
 
+        <!-- Flash Toast Notifications -->
+        {{#if flash.success}}
+        <div class="flash-toast flash-toast-success" id="flashToast" role="alert">
+            <i class="fas fa-check-circle flash-toast-icon"></i>
+            <span class="flash-toast-msg">{{flash.success}}</span>
+            <button class="flash-toast-close" onclick="this.closest('.flash-toast').remove()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {{/if}}
+        {{#if flash.error}}
+        <div class="flash-toast flash-toast-error" id="flashToast" role="alert">
+            <i class="fas fa-circle-xmark flash-toast-icon"></i>
+            <span class="flash-toast-msg">{{flash.error}}</span>
+            <button class="flash-toast-close" onclick="this.closest('.flash-toast').remove()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {{/if}}
+
         <!-- Content -->
         <main class="admin-content">
             {{{body}}}

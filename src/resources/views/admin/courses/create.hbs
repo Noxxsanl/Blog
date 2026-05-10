@@ -1,0 +1,182 @@
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title"><i class="fas fa-plus-circle me-2"></i>Add New Course</h1>
+        <p class="page-subtitle">Fill in the details below to create a new course</p>
+    </div>
+    <div class="page-header-right">
+        <a href="/admin/courses" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Back to Courses
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Main Form -->
+    <div class="col-lg-8">
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <h2 class="panel-card-title"><i class="fas fa-pen me-2 text-primary"></i>Course Details</h2>
+            </div>
+            <div class="panel-card-body">
+
+                {{#if formError}}
+                <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>{{formError}}</span>
+                </div>
+                {{/if}}
+
+                <form method="POST" action="/admin/courses/store" id="courseForm" novalidate>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Course Name <span class="text-danger">*</span></label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="e.g. Complete JavaScript Bootcamp"
+                            value="{{oldInput.name}}"
+                            required
+                            autofocus
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Describe what students will learn in this course..."
+                        >{{oldInput.description}}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Thumbnail URL</label>
+                        <input
+                            type="url"
+                            name="image"
+                            class="form-control"
+                            placeholder="https://example.com/image.jpg"
+                            value="{{oldInput.image}}"
+                            id="imageUrlInput"
+                        />
+                        <div class="mt-2" id="imagePreview" style="display:none;">
+                            <img id="previewImg" src="" alt="Preview"
+                                style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e2e8f0;" />
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold">Level <span class="text-danger">*</span></label>
+                            <select name="level" class="form-select" required>
+                                <option value="" {{#unless oldInput.level}}selected{{/unless}}>Select level</option>
+                                <option value="Cơ bản" {{#if (eq oldInput.level 'Cơ bản')}}selected{{/if}}>Cơ bản</option>
+                                <option value="Trung cấp" {{#if (eq oldInput.level 'Trung cấp')}}selected{{/if}}>Trung cấp</option>
+                                <option value="Nâng cao" {{#if (eq oldInput.level 'Nâng cao')}}selected{{/if}}>Nâng cao</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="published" {{#if (eq (defaultTo oldInput.status 'published') 'published')}}selected{{/if}}>Published</option>
+                                <option value="draft" {{#if (eq oldInput.status 'draft')}}selected{{/if}}>Draft</option>
+                                <option value="archived" {{#if (eq oldInput.status 'archived')}}selected{{/if}}>Archived</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span id="submitText"><i class="fas fa-save me-1"></i>Create Course</span>
+                            <span id="submitSpinner" style="display:none;" aria-hidden="true">
+                                <span class="spinner-border spinner-border-sm me-1"></span>Saving...
+                            </span>
+                        </button>
+                        <a href="/admin/courses" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="col-lg-4">
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <h2 class="panel-card-title"><i class="fas fa-circle-info me-2 text-info"></i>Tips</h2>
+            </div>
+            <div class="panel-card-body">
+                <ul class="list-unstyled mb-0" style="font-size:13px;color:#64748b;line-height:1.9;">
+                    <li><i class="fas fa-check text-success me-2"></i>Use a clear, descriptive name</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Add an image URL for the thumbnail</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Set status to <strong>Draft</strong> to hide from public</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Choose the correct level for your audience</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel-card mt-3">
+            <div class="panel-card-header">
+                <h2 class="panel-card-title"><i class="fas fa-layer-group me-2 text-success"></i>Levels</h2>
+            </div>
+            <div class="panel-card-body" style="font-size:13px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Cơ bản</span>
+                    <span class="text-muted">Beginner — no prior knowledge needed</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Trung cấp</span>
+                    <span class="text-muted">Intermediate — some experience required</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Nâng cao</span>
+                    <span class="text-muted">Advanced — for experienced learners</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    // Image URL preview
+    const input = document.getElementById('imageUrlInput');
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+
+    function showPreview(url) {
+        if (!url) { preview.style.display = 'none'; return; }
+        previewImg.src = url;
+        preview.style.display = 'block';
+        previewImg.onerror = function () { preview.style.display = 'none'; };
+        previewImg.onload = function () { preview.style.display = 'block'; };
+    }
+
+    if (input) {
+        // Show preview if old input had an image (on error re-render)
+        if (input.value) showPreview(input.value);
+        input.addEventListener('blur', function () { showPreview(this.value.trim()); });
+    }
+
+    // Prevent double submit — disable button & show spinner
+    const form = document.getElementById('courseForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            // Basic client-side validation before disabling
+            if (!form.checkValidity()) return;
+
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitSpinner.style.display = 'inline-flex';
+        });
+    }
+})();
+</script>

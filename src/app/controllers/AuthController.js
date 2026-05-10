@@ -2,6 +2,11 @@ import AuthService from '../../services/AuthService.js';
 import { loginSchema, registerSchema } from '../../validators/authValidator.js';
 import logger from '../../utils/logger.js';
 
+const ROLE_REDIRECT = {
+    admin: '/admin/dashboard',
+    user: '/',
+};
+
 class AuthController {
     /**
      * [GET] /login
@@ -9,7 +14,7 @@ class AuthController {
      */
     showLogin(req, res) {
         if (req.session.userId) {
-            return res.redirect('/');
+            return res.redirect(ROLE_REDIRECT[req.session.user?.role] || '/');
         }
         res.render('auth/login', { layout: 'auth' });
     }
@@ -54,10 +59,13 @@ class AuthController {
                 req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
             }
 
-            logger.info('User logged in', { userId: user._id });
+            logger.info('User logged in', { userId: user._id, role: user.role });
 
-            const redirectTo = req.session.returnTo || '/';
+            const returnTo = req.session.returnTo;
             delete req.session.returnTo;
+            const defaultRedirect = ROLE_REDIRECT[user.role] || '/';
+            // Only honour returnTo if it's an internal path (not external)
+            const redirectTo = returnTo && returnTo.startsWith('/') ? returnTo : defaultRedirect;
             return res.redirect(redirectTo);
         } catch (error) {
             logger.error('Login error', { error: error.message });
@@ -75,7 +83,7 @@ class AuthController {
      */
     showRegister(req, res) {
         if (req.session.userId) {
-            return res.redirect('/');
+            return res.redirect(ROLE_REDIRECT[req.session.user?.role] || '/');
         }
         res.render('auth/register', { layout: 'auth' });
     }
@@ -134,7 +142,7 @@ class AuthController {
             if (err) {
                 logger.error('Session destroy error', { error: err.message });
             }
-            res.redirect('/login');
+            res.redirect('/');
         });
     }
 }

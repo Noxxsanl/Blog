@@ -263,8 +263,29 @@ class CourseService {
   }
 
   /**
+   * Get courses with optional search/filter/sort (admin use)
+   *
+   * @param {object} filters - { search, level, status, sort }
+   * @returns {Promise<array>} Filtered course documents
+   */
+  async getFilteredCourses({ search = '', level = '', status = '', sort = 'newest' } = {}) {
+    try {
+      const query = {};
+      if (search) query.name = { $regex: search, $options: 'i' };
+      if (level) query.level = level;
+      if (status) query.status = status;
+
+      const sortOrder = sort === 'oldest' ? 1 : -1;
+      return Courses.find(query).sort({ createdAt: sortOrder }).lean();
+    } catch (error) {
+      logger.error('Error fetching filtered courses', { error: error.message });
+      throw error;
+    }
+  }
+
+  /**
    * Bulk delete courses
-   * 
+   *
    * @param {array} courseIds - Array of course IDs to delete
    * @returns {Promise<object>} Result of bulk delete operation
    * @throws {Error} If operation fails

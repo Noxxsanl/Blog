@@ -2,6 +2,22 @@
     'use strict';
 
     /* =========================================================
+       FLASH TOAST AUTO-DISMISS
+       ========================================================= */
+    const flashToast = document.getElementById('flashToast');
+    if (flashToast) {
+        const DISPLAY_MS = 4000;
+        const FADE_MS = 350;
+
+        const dismiss = () => {
+            flashToast.classList.add('flash-toast-out');
+            setTimeout(() => flashToast.remove(), FADE_MS);
+        };
+
+        setTimeout(dismiss, DISPLAY_MS);
+    }
+
+    /* =========================================================
        SIDEBAR TOGGLE
        ========================================================= */
     const sidebar = document.getElementById('adminSidebar');

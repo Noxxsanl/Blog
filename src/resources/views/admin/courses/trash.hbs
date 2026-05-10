@@ -1,0 +1,115 @@
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title"><i class="fas fa-trash-can me-2"></i>Trash</h1>
+        <p class="page-subtitle">Deleted courses — restore or permanently remove</p>
+    </div>
+    <div class="page-header-right">
+        <a href="/admin/courses" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Back to Courses
+        </a>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="panel-card-header">
+        <h2 class="panel-card-title">
+            <i class="fas fa-recycle me-2 text-warning"></i>Trashed Courses
+        </h2>
+        <span class="text-muted small">{{courses.length}} course(s) in trash</span>
+    </div>
+
+    <div class="panel-card-body p-0">
+        {{#if courses.length}}
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Level</th>
+                        <th>Deleted At</th>
+                        <th style="width:160px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each courses}}
+                    <tr>
+                        <td>
+                            <div class="course-cell">
+                                <div class="course-thumb">
+                                    {{#if this.image}}
+                                    <img src="{{this.image}}" alt="{{this.name}}" />
+                                    {{else}}
+                                    <div class="course-thumb-fallback">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                                <div class="course-info">
+                                    <p class="course-name" style="text-decoration:line-through;opacity:.6;">{{truncate this.name 50}}</p>
+                                    <p class="course-desc">{{truncate this.description 60}}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{levelBadge this.level}}-subtle text-{{levelBadge this.level}} border border-{{levelBadge this.level}}-subtle fw-normal">
+                                {{this.level}}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{formatDate this.deletedAt}}</td>
+                        <td>
+                            <div class="action-btns">
+                                <!-- Restore -->
+                                <form method="POST" action="/admin/courses/{{this._id}}/restore?_method=PATCH" class="d-inline">
+                                    <button type="submit" class="action-btn action-btn-edit" title="Restore course"
+                                        style="width:auto;padding:0 10px;gap:4px;font-size:12px;">
+                                        <i class="fas fa-rotate-left"></i> Restore
+                                    </button>
+                                </form>
+                                <!-- Force delete -->
+                                <button type="button"
+                                    class="action-btn action-btn-delete btn-force-delete"
+                                    data-id="{{this._id}}"
+                                    data-name="{{this.name}}"
+                                    title="Delete permanently"
+                                    style="width:auto;padding:0 10px;gap:4px;font-size:12px;">
+                                    <i class="fas fa-bomb"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <i class="fas fa-trash-can empty-state-icon"></i>
+            <p class="empty-state-title">Trash is empty</p>
+            <p class="empty-state-sub">No courses have been deleted yet.</p>
+            <a href="/admin/courses" class="btn btn-primary btn-sm mt-2">
+                <i class="fas fa-book me-1"></i>View All Courses
+            </a>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<!-- Hidden force-delete form -->
+<form id="forceDeleteForm" method="POST" style="display:none;"></form>
+
+<script>
+(function () {
+    document.querySelectorAll('.btn-force-delete').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            if (!confirm('Permanently delete "' + name + '"? This cannot be undone.')) return;
+            const form = document.getElementById('forceDeleteForm');
+            form.action = '/admin/courses/' + id + '/force?_method=DELETE';
+            form.method = 'POST';
+            form.submit();
+        });
+    });
+})();
+</script>
